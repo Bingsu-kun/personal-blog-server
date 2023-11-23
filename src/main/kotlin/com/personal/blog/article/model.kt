@@ -1,12 +1,15 @@
 package com.personal.blog
 
+import jakarta.persistence.*
 import java.time.LocalDateTime
 import org.springframework.data.annotation.Id
 
+@Entity
 class Article(
-    @Id val id: Long? = null,
-    var title: String,
-    var content: String,
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-    var tags: Array<String>,
+                @Id @GeneratedValue val id: Long? = null,
+                val createdAt: LocalDateTime = LocalDateTime.now(),
+                var title: String,
+                var content: String,
+                var tags: Array<String>,
+                var viewCount: Int = 0
 )
