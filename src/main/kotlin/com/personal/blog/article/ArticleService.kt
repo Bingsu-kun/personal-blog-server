@@ -18,9 +18,9 @@ class ArticleService(private val repository: ArticleRepository) {
 
     fun createMany(articles: Iterable<Article>): Iterable<Article> = repository.saveAll(articles)
 
-    fun update(id: String): Optional<Article> {
-        // TODO update logic
-    }
+    // fun update(id: String): Optional<Article> {
+    //     TODO update logic
+    // }
 
     fun delete(id: String): Unit {
         repository.deleteById(id)
