@@ -4,7 +4,8 @@ import ReplaceArticleDto
 import UpdateArticleDto
 import org.springframework.http.HttpStatus.*
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
+import BlogExceptions
+import ExceptionCodes
 
 @RestController
 @RequestMapping("/api/v1/article")
@@ -12,7 +13,7 @@ class ArticleController(private val service: ArticleService) {
 
     @GetMapping("/{id}")
     fun getArticle(@PathVariable("id") id: String): Article =
-            service.findById(id) ?: throw ResponseStatusException(NOT_FOUND, "Article not exists.")
+            service.findById(id) ?: throw BlogExceptions(ExceptionCodes.ARTICLE_NOT_FOUND)
 
     @GetMapping("/")
     fun getArticles(
@@ -31,18 +32,18 @@ class ArticleController(private val service: ArticleService) {
         }
     }
 
-    @PostMapping("/") fun createArticle(@RequestBody article: Article) = service.create(article)
+    @PostMapping("/") fun createArticle(@RequestBody article: Article) : Article = service.create(article)
 
     @PostMapping("/batch")
-    fun createManyArticles(@RequestBody articles: List<Article>) = service.createMany(articles)
+    fun createManyArticles(@RequestBody articles: List<Article>) : Iterable<Article> = service.createMany(articles)
 
     @PatchMapping("/{id}")
-    fun updateArticle(@PathVariable("id") id: String, @RequestBody article: UpdateArticleDto) =
-            service.update(id, article)
+    fun updateArticle(@PathVariable("id") id: String, @RequestBody article: UpdateArticleDto) : Article =
+            service.update(id, article) ?: throw BlogExceptions(ExceptionCodes.ARTICLE_NOT_FOUND)
 
     @PutMapping("/{id}")
-    fun replaceArticle(@PathVariable("id") id: String, @RequestBody article: ReplaceArticleDto) =
-            service.replace(id, article)
+    fun replaceArticle(@PathVariable("id") id: String, @RequestBody article: ReplaceArticleDto) : Article =
+            service.replace(id, article)  ?: throw BlogExceptions(ExceptionCodes.ARTICLE_NOT_FOUND)
 
-    @DeleteMapping("/{id}") fun deleteArticle(id: String): Unit = service.delete(id)
+    @DeleteMapping("/{id}") fun deleteArticle(id: String) = service.delete(id) ? return : throw BlogExceptions(ExceptionCodes.ARTICLE_NOT_FOUND)
 }

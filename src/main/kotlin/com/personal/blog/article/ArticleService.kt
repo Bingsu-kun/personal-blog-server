@@ -49,5 +49,9 @@ class ArticleService(private val repository: ArticleRepository) {
         return repository.save(before)
     }
 
-    fun delete(id: String): Unit = repository.deleteById(id)
+    fun delete(id: String): Boolean {
+        if (!repository.existsById(id)) return false
+        repository.deleteById(id)
+        return true
+    }
 }
