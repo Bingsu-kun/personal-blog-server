@@ -1,5 +1,7 @@
 package com.personal.blog
 
+import BlogExceptions
+import ExceptionCodes
 import ReplaceArticleDto
 import UpdateArticleDto
 import org.springframework.data.domain.Sort
@@ -49,9 +51,8 @@ class ArticleService(private val repository: ArticleRepository) {
         return repository.save(before)
     }
 
-    fun delete(id: String): Boolean {
-        if (!repository.existsById(id)) return false
+    fun delete(id: String): Unit {
+        if (!repository.existsById(id)) throw BlogExceptions(ExceptionCodes.ARTICLE_NOT_FOUND)
         repository.deleteById(id)
-        return true
     }
 }

@@ -1,9 +1,9 @@
 package com.personal.blog
 
-import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.*
 
-@Controller
+@RestController
+@RequestMapping("")
 class BaseController {
 
     @GetMapping("/hc")
