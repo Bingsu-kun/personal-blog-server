@@ -1,6 +1,7 @@
 package com.personal.blog
 
-import java.util.Optional
+import ReplaceArticleDto
+import UpdateArticleDto
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 import org.springframework.stereotype.Service
 
@@ -8,33 +9,44 @@ import org.springframework.stereotype.Service
 @Service
 class ArticleService(private val repository: ArticleRepository) {
 
-    fun findById(id: String): Optional<Article> = repository.findById(id)
+    fun findById(id: String): Article? = repository.findById(id).get()
 
-    fun findAll(): Iterable<Article> = repository.findAll()
+    fun findAll(): Iterable<Article> = repository.findAllReverse()
 
     fun findByTag(tag: String): Iterable<Article> = repository.findByTag(tag)
 
     fun findByTitle(title: String): Iterable<Article> = repository.findByTitle(title)
 
-    fun create(article: ArticleProperty): Article {
-        return repository.save(
-                Article(null, article.title, article.content, article.tags, article.thumbnail)
-        )
+    fun findByTagAndTitle(tag: String, title: String): Iterable<Article> =
+            repository.findByTagAndTitle(tag, title)
+
+    fun create(article: Article): Article = repository.save(article)
+
+    fun createMany(articles: Iterable<Article>): Iterable<Article> = repository.saveAll(articles)
+
+    fun update(id: String, article: UpdateArticleDto): Article? {
+        if (!repository.existsById(id)) return null
+        var before = repository.findById(id).get()
+
+        if (!article.title.isNullOrBlank()) before.title = article.title
+        if (!article.content.isNullOrBlank()) before.content = article.content
+        if (!article.tags.isNullOrEmpty()) before.tags = article.tags
+        if (!article.thumbnail.isNullOrBlank()) before.thumbnail = article.thumbnail
+
+        return repository.save(before)
     }
 
-    fun createMany(articles: Iterable<ArticleProperty>): Iterable<Article> {
-        var result: MutableList<Article> = mutableListOf<Article>()
-        for (a in articles) result.add(
-                repository.save(Article(null, a.title, a.content, a.tags, a.thumbnail))
-        )
-        return result
+    fun replace(id: String, article: ReplaceArticleDto): Article? {
+        if (!repository.existsById(id)) return null
+        var before = repository.findById(id).get()
+
+        before.title = article.title
+        before.content = article.content
+        before.tags = article.tags
+        before.thumbnail = article.thumbnail
+
+        return repository.save(before)
     }
 
-    // fun update(id: String): Optional<Article> {
-    //     TODO update logic
-    // }
-
-    fun delete(id: String): Unit {
-        repository.deleteById(id)
-    }
+    fun delete(id: String): Unit = repository.deleteById(id)
 }

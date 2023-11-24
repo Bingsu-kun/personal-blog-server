@@ -1,5 +1,7 @@
 package com.personal.blog
 
+import ReplaceArticleDto
+import UpdateArticleDto
 import org.springframework.http.HttpStatus.*
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -9,38 +11,38 @@ import org.springframework.web.server.ResponseStatusException
 class ArticleController(private val service: ArticleService) {
 
     @GetMapping("/{id}")
-    fun getArticle(id: String): ArticleProperty {
-        val nullableArticle = service.findById(id)
-
-        if (nullableArticle.isEmpty) {
-            throw ResponseStatusException(NOT_FOUND, "Article not exists.")
-        }
-        val article = nullableArticle.get()
-
-        return ArticleProperty(article.title, article.content, article.tags, article.thumbnail)
-    }
+    fun getArticle(@PathVariable("id") id: String): Article =
+            service.findById(id) ?: throw ResponseStatusException(NOT_FOUND, "Article not exists.")
 
     @GetMapping("/")
-    fun getArticles(tag: String? = null, title: String? = null): Iterable<ArticleProperty> {
-        var articleProperties: ArrayList<ArticleProperty> = ArrayList<ArticleProperty>()
-        val articles: Iterable<Article>
+    fun getArticles(
+            @RequestParam tag: String? = null,
+            @RequestParam title: String? = null
+    ): Iterable<Article> {
 
-        if (!tag.isNullOrEmpty()) {
-            articles = service.findByTag(tag)
-        } else if (!title.isNullOrEmpty()) {
-            articles = service.findByTitle(title)
+        if (!tag.isNullOrBlank() && !title.isNullOrBlank()) {
+            return service.findByTagAndTitle(tag, title)
+        } else if (!tag.isNullOrBlank()) {
+            return service.findByTag(tag)
+        } else if (!title.isNullOrBlank()) {
+            return service.findByTitle(title)
         } else {
-            articles = service.findAll()
+            return service.findAll()
         }
-
-        for (article in articles) {
-            articleProperties.add(ArticleProperty(article.title, article.content, article.tags))
-        }
-
-        return articleProperties
     }
 
-    //     @PostMapping("/")
-    //     fun createArticle(body: RequestEntity<ArticleProperty
-    // >) {}
+    @PostMapping("/") fun createArticle(@RequestBody article: Article) = service.create(article)
+
+    @PostMapping("/batch")
+    fun createManyArticles(@RequestBody articles: List<Article>) = service.createMany(articles)
+
+    @PatchMapping("/{id}")
+    fun updateArticle(@PathVariable("id") id: String, @RequestBody article: UpdateArticleDto) =
+            service.update(id, article)
+
+    @PutMapping("/{id}")
+    fun replaceArticle(@PathVariable("id") id: String, @RequestBody article: ReplaceArticleDto) =
+            service.replace(id, article)
+
+    @DeleteMapping("/{id}") fun deleteArticle(id: String): Unit = service.delete(id)
 }
