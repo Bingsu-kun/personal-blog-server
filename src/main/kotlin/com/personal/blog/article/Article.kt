@@ -1,19 +1,23 @@
 package com.personal.blog
 
-import jakarta.persistence.*
 import java.time.LocalDateTime
 import kotlin.collections.List
+import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 
-@Entity
+@Document("articles")
 class Article(
-        @Id @GeneratedValue val id: String? = null,
-        val createdAt: LocalDateTime = LocalDateTime.now(),
-        var title: String,
-        var content: String,
-        var tags: List<String>,
-        var thumbnail: String? = null,
-        var viewCount: Int = 0
+        @Id private val id: ObjectId? = null,
+        private var title: String,
+        private var content: String,
+        private var tags: List<String>,
+        private var thumbnail: String? = null,
 ) {
+    private val createdAt: LocalDateTime = LocalDateTime.now()
+
+    private var viewCount: Int = 0
+        private set
+
     fun increaseViewCount() = this.viewCount++
 }
