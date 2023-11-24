@@ -82,9 +82,11 @@ class ArticleControllerTests(
         // Then
         val savedArticle = articleRepository.findAll().get(0)
 
+        assert(!savedArticle.id.isNullOrBlank())
         assert(simpleArticle.title == savedArticle.title)
         assert(simpleArticle.content == savedArticle.content)
         assert(simpleArticle.tags == savedArticle.tags)
         assert(simpleArticle.thumbnail == savedArticle.thumbnail)
+        assert(savedArticle.viewCount == 0)
     }
 }
