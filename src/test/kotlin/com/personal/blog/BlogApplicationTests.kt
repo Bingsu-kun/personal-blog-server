@@ -1,13 +1,10 @@
-// package com.personal.blog
+package com.personal.blog
 
-// import org.junit.jupiter.api.Test
-// import org.springframework.boot.test.context.SpringBootTest
+import org.junit.jupiter.api.Test
+import org.springframework.boot.test.context.SpringBootTest
 
-// @SpringBootTest
-// class BlogApplicationTests {
+@SpringBootTest
+class BlogApplicationTests {
 
-// 	@Test
-// 	fun contextLoads() {
-// 	}
-
-// }
+    @Test fun contextLoads() {}
+}
