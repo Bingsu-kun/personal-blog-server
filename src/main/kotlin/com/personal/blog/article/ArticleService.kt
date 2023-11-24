@@ -2,6 +2,7 @@ package com.personal.blog
 
 import ReplaceArticleDto
 import UpdateArticleDto
+import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 import org.springframework.stereotype.Service
 
@@ -11,7 +12,7 @@ class ArticleService(private val repository: ArticleRepository) {
 
     fun findById(id: String): Article? = repository.findById(id).get()
 
-    fun findAll(): Iterable<Article> = repository.findAllReverse()
+    fun findAll(): Iterable<Article> = repository.findAll(Sort.by(Sort.Direction.DESC, "id"))
 
     fun findByTag(tag: String): Iterable<Article> = repository.findByTag(tag)
 
