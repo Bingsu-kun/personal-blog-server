@@ -114,4 +114,21 @@ class ArticleControllerTests(
         assert(updatedArticle.thumbnail == savedArticle.thumbnail)
         assert(savedArticle.viewCount == 0)
     }
+
+    @Test  
+    fun `Delete article`() {
+        //Given
+        val simpleArticle = Article(null, "제목", "내용", listOf("Test"), "썸넬Url입니다")
+        val savedArticle = articleRepository.save(simpleArticle)
+
+        //When
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/articles/${savedArticle.id}")
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk)
+
+        //Then
+        val remainArticle = articleRepository.findAll()
+
+        assert(remainArticle.isEmpty())
+    }
 }
