@@ -89,4 +89,29 @@ class ArticleControllerTests(
         assert(simpleArticle.thumbnail == savedArticle.thumbnail)
         assert(savedArticle.viewCount == 0)
     }
+
+    @Test
+    fun `Update article`() {
+        //Given
+        val simpleArticle = Article(null, "제목", "내용", listOf("Test"), "썸넬Url입니다")
+        val savedArticle = articleRepository.save(simpleArticle)
+
+        val updateJson = mapOf("title" to "제목이었던 것", "content" to "내용이었던 것")
+
+        //When
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/articles/${savedArticle.id}")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(updateJson)))
+        .andExpect(status().isOk)
+
+        //Then
+        val updatedArticle = articleRepository.findAll().get(0)
+
+        assert(!updatedArticle.id.isNullOrBlank())
+        assert(updatedArticle.title == "제목이었던 것")
+        assert(updatedArticle.content == "내용이었던 것")
+        assert(updatedArticle.tags == savedArticle.tags)
+        assert(updatedArticle.thumbnail == savedArticle.thumbnail)
+        assert(savedArticle.viewCount == 0)
+    }
 }
