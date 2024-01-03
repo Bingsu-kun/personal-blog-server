@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  blog-db:
+    image: mongo:7.0.4
+    restart: unless-stopped
+    env_file: 
+      - ./.env
+    ports:
+      - $MONGODB_LOCAL_PORT:$MONGODB_DOCKER_PORT
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGODB_USER
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGODB_PASSWORD
+    volumes:
+      - ./blog_mongo_data:/data/db
+
+  blog-server:
+    depends_on:
+        - blog-db
+    build: .
+    restart: on-failure
+    env_file:
+      - ./.env
+    ports:
+      - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
+    environment:
+      SPRING_APPLICATION_JSON: '{"spring.data.mongodb.uri" : "mongodb://$MONGODB_USER:$MONGODB_PASSWORD@blog-db:$MONGODB_DOCKER_PORT/$MONGODB_DATABASE?authSource=admin"}'
+    stdin_open: true
+    tty: true    

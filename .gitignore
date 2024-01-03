@@ -53,3 +53,5 @@ gradle-app.setting
 *.hprof
 
 bin
+blog_mongo_data
+.env

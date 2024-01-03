@@ -2,9 +2,7 @@ package com.personal.blog
 
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.data.mongodb.repository.Query
-import org.springframework.stereotype.Repository
 
-@Repository
 interface ArticleRepository : MongoRepository<Article, String> {
 
     @Query(value = "{tags: {\$eleMatch: '?0'}}", sort = "{id: -1}")
